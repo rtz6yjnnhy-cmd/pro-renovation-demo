@@ -1,0 +1,302 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Primitives — Pro-Renovation brand: charcoal, warm white, orange */
+  /* #17191B charcoal · #F7F5F0 warm white · #EF7918 brand orange */
+
+  /* Semantic tokens (RGB channels for Tailwind opacity) */
+  --ink: 23 25 27;        /* charcoal: text on light, dark surfaces */
+  --paper: 247 245 240;   /* warm white: page background */
+  --stone: 236 232 224;   /* secondary light surface */
+  --muted: 92 94 97;      /* secondary text on paper (5.97:1) */
+  --haze: 166 164 158;    /* secondary text on ink (7.07:1) */
+  --line: 119 119 119;    /* architectural gray: rules and borders */
+  --brand: 239 121 24;    /* brand orange: fills, marks, text on ink only */
+  --ember: 168 84 13;     /* orange for text on paper (4.89:1) */
+
+  --nav-h: 80px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: var(--nav-h);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    @apply bg-paper font-sans text-base text-ink antialiased;
+    font-feature-settings: "ss01", "ss02";
+  }
+
+  ::selection {
+    background: rgb(var(--brand));
+    color: rgb(var(--ink));
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--brand));
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-site px-6 md:px-12 xl:px-16;
+  }
+
+  /* Expanded width of Archivo for headlines — the brand's architectural voice */
+  .type-display {
+    font-stretch: 118%;
+    font-weight: 500;
+    letter-spacing: -0.035em;
+  }
+
+  /* Hero statement: widest cut of Archivo, set in capitals */
+  .type-hero {
+    font-stretch: 125%;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  .type-heading {
+    font-stretch: 112%;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+  }
+
+  .type-label {
+    font-stretch: 100%;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    font-size: 0.8125rem;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Architectural depth stage (src/components/ui/3d-animation.tsx)      */
+/* Adapted from the 21st.dev 3D animation; all classes prefixed a3d-.  */
+/* ------------------------------------------------------------------ */
+
+.a3d-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Fixed 1000×667 scene (the photo's 3:2 ratio), scaled to cover by JS */
+.a3d-stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1000px;
+  height: 667px;
+  transform-origin: 0 0;
+}
+
+.a3d-camera {
+  --a3d-ox: 50%;
+  --a3d-oy: 50%;
+  position: absolute;
+  inset: 0;
+  transform-origin: 42% 40%;
+  animation: a3d-push 26s ease-in-out infinite alternate;
+}
+
+.a3d-photo {
+  object-fit: cover;
+  filter: saturate(0.82);
+}
+
+.a3d-foreground {
+  position: absolute;
+  inset: 0;
+}
+
+/* The room: an open box seen from its front opening */
+.a3d-room {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 1000px;
+  height: 236px;
+  perspective: 680px;
+  perspective-origin: var(--a3d-ox) var(--a3d-oy);
+  transition: perspective-origin 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.a3d-cube {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.a3d-face {
+  position: absolute;
+  top: 0;
+  height: 236px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-top: 1px solid rgb(var(--paper) / 0.22);
+  border-bottom: 1px solid rgb(var(--paper) / 0.22);
+  animation: a3d-fade 1.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.a3d-face--left {
+  left: 0;
+  width: 900px;
+  transform-origin: left center;
+  transform: rotateY(90deg);
+  animation-delay: 0.9s;
+}
+
+.a3d-face--back {
+  left: 0;
+  width: 1000px;
+  transform: translateZ(-900px);
+  animation-delay: 0.5s;
+}
+
+.a3d-face--right {
+  right: 0;
+  width: 900px;
+  transform-origin: right center;
+  transform: rotateY(-90deg);
+  animation-delay: 0.9s;
+}
+
+/* Text band: two identical halves, moved with transforms only */
+.a3d-track {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+  will-change: transform;
+  animation: a3d-scroll 140s linear infinite;
+}
+
+.a3d-phrase {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42em;
+  padding-right: 0.42em;
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  font-size: 150px;
+  font-stretch: 125%;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: rgb(var(--paper) / 0.9);
+  text-shadow: 0 0 28px rgb(var(--paper) / 0.18);
+}
+
+.a3d-mark {
+  display: inline-block;
+  width: 0.14em;
+  height: 0.14em;
+  background: rgb(var(--brand));
+}
+
+/* Reflection on the wet driveway */
+.a3d-room--reflect {
+  top: 470px;
+  transform: scaleY(-1);
+  opacity: 0.14;
+  mix-blend-mode: screen;
+  -webkit-mask-image: linear-gradient(to top, #000, transparent 70%);
+  mask-image: linear-gradient(to top, #000, transparent 70%);
+}
+
+/* Phones: one flat band behind the roofline, no 3D walls */
+.a3d-flat {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 1000px;
+  height: 112px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-top: 1px solid rgb(var(--paper) / 0.22);
+  border-bottom: 1px solid rgb(var(--paper) / 0.22);
+  animation: a3d-fade 1.8s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+}
+
+.a3d-flat .a3d-phrase {
+  font-size: 84px;
+}
+
+/* Very short phones: the headline needs the room, keep the photograph clean */
+@media (max-height: 620px) {
+  .a3d-flat {
+    display: none;
+  }
+}
+
+/* The lowered photo fades into the night above it */
+.a3d-stage[data-mode="lite"] .a3d-photo {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 72px);
+  mask-image: linear-gradient(to bottom, transparent, #000 72px);
+}
+
+.a3d-flat .a3d-track {
+  animation-duration: 90s;
+}
+
+@keyframes a3d-scroll {
+  from {
+    transform: translate3d(calc(var(--a3d-offset, 0px) * -1), 0, 0);
+  }
+  to {
+    transform: translate3d(calc(var(--a3d-offset, 0px) * -1 - 50%), 0, 0);
+  }
+}
+
+@keyframes a3d-push {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes a3d-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .a3d-camera,
+  .a3d-track {
+    animation: none;
+  }
+
+  .a3d-track {
+    transform: translate3d(calc(var(--a3d-offset, 0px) * -1 - 420px), 0, 0);
+  }
+
+  .a3d-room {
+    transition: none;
+  }
+}
